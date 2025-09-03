@@ -16,9 +16,6 @@ import {
   Bell
 } from 'lucide-react'
 import { useWeb3 } from '@/lib/web3-context'
-import { StakingCard } from '@/components/staking/StakingCard'
-import { NetworkPill } from '@/components/staking/NetworkPill'
-import { AddStakeModal } from '@/components/staking/AddStakeModal'
 import { useStaking } from '@/hooks/useStaking'
 
 const networks = [
@@ -124,12 +121,19 @@ export default function StakingPage() {
         <div className="p-4">
           <div className="flex space-x-3 overflow-x-auto pb-2">
             {networks.map((network) => (
-              <NetworkPill
+              <button
                 key={network.id}
-                network={network}
-                isActive={network.isActive}
                 onClick={() => handleNetworkSelect(network.id)}
-              />
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all ${
+                  network.isActive
+                    ? 'bg-accent-blue border-accent-blue text-white'
+                    : 'bg-transparent border-border-light text-text-secondary hover:border-accent-blue/50'
+                }`}
+              >
+                <network.icon className={`h-4 w-4 ${network.color}`} />
+                <span className="text-sm font-medium">{network.name}</span>
+                <span className="text-xs">{network.apy}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -137,12 +141,46 @@ export default function StakingPage() {
         {/* Mobile Staking Cards */}
         <div className="p-4 space-y-4">
           {stakingPositions.map((position) => (
-            <StakingCard
-              key={position.id}
-              position={position}
-              onAddStake={handleAddStake}
-              onClaimRewards={handleClaimRewards}
-            />
+            <div key={position.id} className="bg-[#282840] rounded-3xl p-6 border border-border-light">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-accent-green rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">{position.name.charAt(0)}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-text-primary font-medium">{position.name}</h3>
+                    <p className="text-accent-green text-sm font-medium">{position.apy}% APY</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsAddStakeModalOpen(true)}
+                  className="bg-accent-blue text-white px-4 py-2 rounded-xl font-medium hover:bg-accent-blue/80 transition-colors"
+                >
+                  Add Stake
+                </button>
+              </div>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-text-secondary">Staked:</span>
+                  <span className="text-text-primary font-medium">
+                    ${position.totalDeposited.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-text-secondary">Pending:</span>
+                  <span className="text-accent-green font-medium">
+                    ${position.pendingRewards.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-text-secondary">Earned:</span>
+                  <span className="text-text-primary font-medium">
+                    ${position.earned.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -329,13 +367,22 @@ export default function StakingPage() {
         </div>
       </div>
 
-      {/* Add Stake Modal */}
-      <AddStakeModal
-        isOpen={isAddStakeModalOpen}
-        onClose={() => setIsAddStakeModalOpen(false)}
-        onAddStake={handleAddStake}
-        selectedNetwork={networks.find(n => n.id === selectedNetwork)}
-      />
+      {/* Simple Add Stake Modal */}
+      {isAddStakeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={() => setIsAddStakeModalOpen(false)} />
+          <div className="relative bg-bg-card border border-border-light rounded-2xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold text-text-primary mb-4">Add Stake</h2>
+            <p className="text-text-secondary mb-4">Stake functionality will be implemented here.</p>
+            <button 
+              onClick={() => setIsAddStakeModalOpen(false)}
+              className="bg-accent-blue text-white px-4 py-2 rounded-xl font-medium"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

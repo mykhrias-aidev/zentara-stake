@@ -259,6 +259,13 @@ export default function SignUpPage() {
             </Button>
           </form>
 
+          {/* Test Credentials Note */}
+          <div className="mt-4 p-3 bg-accent-blue/10 border border-accent-blue/20 rounded-lg">
+            <p className="text-xs text-accent-blue text-center">
+              <strong>Test Account:</strong> bash@gmail.com / 123456
+            </p>
+          </div>
+
           {/* Login Link */}
           <p className="mt-8 text-center text-text-secondary">
             Already have an account?{' '}

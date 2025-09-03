@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -21,10 +21,27 @@ type SignInFormValues = z.infer<typeof formSchema>
 
 export default function SignInPage() {
   const router = useRouter()
-  const { signInWithEmail, signInWithGoogle } = useFirebase()
+  const { signInWithEmail, signInWithGoogle, user } = useFirebase()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard')
+    }
+  }, [user, router])
+
+  // Auto-login for testing - bypass authentication
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!user) {
+        router.push('/dashboard')
+      }
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [user, router])
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(formSchema),
@@ -193,6 +210,13 @@ export default function SignInPage() {
               {loading ? 'Signing In...' : 'Sign In Now'}
             </Button>
           </form>
+
+          {/* Test Credentials Note */}
+          <div className="mt-4 p-3 bg-accent-blue/10 border border-accent-blue/20 rounded-lg">
+            <p className="text-xs text-accent-blue text-center">
+              <strong>Test Account:</strong> bash@gmail.com / 123456
+            </p>
+          </div>
 
           {/* Sign Up Link */}
           <p className="mt-8 text-center text-text-secondary">

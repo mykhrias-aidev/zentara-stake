@@ -34,71 +34,105 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Auto-login for testing - bypass authentication
   useEffect(() => {
-    // Check if user is already logged in (from localStorage)
-    const savedUser = localStorage.getItem('zentara_user')
-    if (savedUser) {
-      try {
-        const userData = JSON.parse(savedUser)
-        setUser(userData)
-      } catch (error) {
-        console.error('Error parsing saved user:', error)
-        localStorage.removeItem('zentara_user')
+    const autoLogin = () => {
+      const testUser: User = {
+        uid: 'test_user_123',
+        email: 'test@example.com',
+        displayName: 'Test User',
+        photoURL: null,
+        emailVerified: true,
+        metadata: {
+          creationTime: new Date().toISOString(),
+          lastSignInTime: new Date().toISOString(),
+        },
+        providerData: [],
+        refreshToken: 'test_refresh_token',
+        tenantId: null,
+        delete: async () => {},
+        getIdToken: async () => 'test_token',
+        getIdTokenResult: async () => ({ authTime: '', issuedAtTime: '', signInProvider: null, token: 'test_token', claims: {} }),
+        reload: async () => {},
+        toJSON: () => ({}),
+        phoneNumber: null,
+        providerId: 'password',
+        isAnonymous: false,
       }
+      setUser(testUser)
+      setLoading(false)
     }
-    setLoading(false)
+
+    // Auto-login after 1 second for testing
+    const timer = setTimeout(autoLogin, 1000)
+    return () => clearTimeout(timer)
   }, [])
 
   const signUpWithEmail = async (email: string, password: string) => {
-    // Mock implementation - allow specific credentials
-    if (email === 'bash@gmail.com' && password === '123456') {
+    try {
+      // Mock implementation - allow specific credentials
+      if (email === 'bash@gmail.com' && password === '123456') {
+        const newUser: User = {
+          id: 'user_bash',
+          email: email,
+          displayName: 'Bash User',
+          kycStatus: 'pending'
+        }
+        setUser(newUser)
+        localStorage.setItem('zentara_user', JSON.stringify(newUser))
+        return
+      }
+      
+      // For other emails, create new user
       const newUser: User = {
         id: 'user_' + Date.now(),
         email: email,
-        displayName: 'Bash User',
+        displayName: email.split('@')[0],
         kycStatus: 'pending'
       }
       setUser(newUser)
       localStorage.setItem('zentara_user', JSON.stringify(newUser))
-      return
+    } catch (error) {
+      console.error('Sign up error:', error)
+      throw error
     }
-    
-    // For other emails, create new user
-    const newUser: User = {
-      id: 'user_' + Date.now(),
-      email: email,
-      displayName: email.split('@')[0],
-      kycStatus: 'pending'
-    }
-    setUser(newUser)
-    localStorage.setItem('zentara_user', JSON.stringify(newUser))
   }
 
   const signInWithEmail = async (email: string, password: string) => {
-    // Mock implementation - allow specific credentials
-    if (email === 'bash@gmail.com' && password === '123456') {
-      const existingUser: User = {
-        id: 'user_bash',
-        email: email,
-        displayName: 'Bash User',
-        kycStatus: 'pending'
-      }
-      setUser(existingUser)
-      localStorage.setItem('zentara_user', JSON.stringify(existingUser))
-      return
-    }
-    
-    // For other users, check if they exist
-    const savedUser = localStorage.getItem('zentara_user')
-    if (savedUser) {
-      const userData = JSON.parse(savedUser)
-      if (userData.email === email) {
-        setUser(userData)
+    try {
+      // Mock implementation - allow specific credentials
+      if (email === 'bash@gmail.com' && password === '123456') {
+        const existingUser: User = {
+          id: 'user_bash',
+          email: email,
+          displayName: 'Bash User',
+          kycStatus: 'pending'
+        }
+        setUser(existingUser)
+        localStorage.setItem('zentara_user', JSON.stringify(existingUser))
         return
       }
+      
+      // For other users, check if they exist
+      const savedUser = localStorage.getItem('zentara_user')
+      if (savedUser) {
+        const userData = JSON.parse(savedUser)
+        if (userData.email === email) {
+          setUser(userData)
+          return
+        }
+      }
+      
+      // If we get here, credentials are invalid
+      if (email === 'bash@gmail.com') {
+        throw new Error('Password for bash@gmail.com is 123456 (6 digits)')
+      } else {
+        throw new Error('Invalid email or password. Please check your credentials.')
+      }
+    } catch (error) {
+      console.error('Sign in error:', error)
+      throw error
     }
-    
-    throw new Error('Invalid email or password')
   }
 
   const signInWithGoogle = async () => {
