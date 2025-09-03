@@ -1,0 +1,255 @@
+/* Notification System Styles */
+/* Matches the app aesthetic with rounded corners, borders, and subtle gradients */
+
+.notification-container {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.notification-container.top-right {
+  top: 1rem;
+  right: 1rem;
+}
+
+.notification-container.bottom-center {
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.notification-container.top-center {
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.notification {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+  pointer-events: auto;
+  max-width: 24rem;
+  width: 100%;
+  animation: notification-slide-in 0.3s ease-out;
+}
+
+.notification.success {
+  border-color: var(--accent-green);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.05) 100%);
+}
+
+.notification.error {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(239, 68, 68, 0.05) 100%);
+}
+
+.notification.warning {
+  border-color: var(--accent-orange);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(245, 158, 11, 0.05) 100%);
+}
+
+.notification.info {
+  border-color: var(--accent-blue);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(59, 130, 246, 0.05) 100%);
+}
+
+.notification-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.notification-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.notification.success .notification-icon {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent-green);
+}
+
+.notification.error .notification-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.notification.warning .notification-icon {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-orange);
+}
+
+.notification.info .notification-icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue);
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.notification-message {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.notification-close:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.notification-close:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-green);
+}
+
+/* Animation keyframes */
+@keyframes notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes notification-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .notification-container.top-right,
+  .notification-container.top-center {
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+  }
+  
+  .notification-container.bottom-center {
+    bottom: 5rem; /* Above mobile navigation */
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+  }
+  
+  .notification {
+    max-width: none;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Toast variant */
+.notification.toast {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  max-width: 20rem;
+}
+
+.notification.toast .notification-header {
+  margin-bottom: 0.25rem;
+}
+
+.notification.toast .notification-title {
+  font-size: 0.8125rem;
+}
+
+.notification.toast .notification-message {
+  font-size: 0.6875rem;
+}
+
+/* Progress bar for auto-dismiss */
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent-green);
+  border-radius: 0 0 1rem 1rem;
+  animation: notification-progress 5s linear;
+}
+
+.notification.success .notification-progress {
+  background: var(--accent-green);
+}
+
+.notification.error .notification-progress {
+  background: #ef4444;
+}
+
+.notification.warning .notification-progress {
+  background: var(--accent-orange);
+}
+
+.notification.info .notification-progress {
+  background: var(--accent-blue);
+}
+
+@keyframes notification-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Stacking notifications */
+.notification-container .notification + .notification {
+  margin-top: 0.5rem;
+}
+
+/* Hover effects */
+.notification:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 25px rgba(16, 185, 129, 0.2);
+  transition: all 0.2s ease;
+}
+
+/* Focus states for accessibility */
+.notification:focus-within {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 2px;
+}
