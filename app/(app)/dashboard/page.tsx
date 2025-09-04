@@ -59,6 +59,8 @@ export default function DashboardPage() {
   const handleConnectWallet = async () => {
     try {
       await connect()
+      // Show success message and update UI
+      console.log('Wallet connected successfully!')
     } catch (error) {
       console.error('Failed to connect wallet:', error)
       

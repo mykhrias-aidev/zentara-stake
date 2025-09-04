@@ -91,6 +91,12 @@ export function Web3Provider({ children }: Web3ProviderProps) {
         if (isMetaMaskInstalled) {
           // If MetaMask is installed on mobile, try to connect
           await connect({ connector: metaMask() })
+          // Auto-redirect to dashboard after successful connection
+          if (typeof window !== 'undefined') {
+            setTimeout(() => {
+              window.location.href = '/dashboard'
+            }, 1000)
+          }
         } else {
           // Redirect to MetaMask app store or show QR code
           openMetaMaskApp()
@@ -99,6 +105,12 @@ export function Web3Provider({ children }: Web3ProviderProps) {
         // Desktop connection logic
         if (isMetaMaskInstalled) {
           await connect({ connector: metaMask() })
+          // Auto-redirect to dashboard after successful connection
+          if (typeof window !== 'undefined') {
+            setTimeout(() => {
+              window.location.href = '/dashboard'
+            }, 1000)
+          }
         } else {
           // Redirect to MetaMask extension installation
           installMetaMask()

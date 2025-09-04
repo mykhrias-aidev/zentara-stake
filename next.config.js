@@ -11,12 +11,9 @@ const nextConfig = {
     unoptimized: true,
   },
   
+  
   // Compilation optimizations
   swcMinify: true,
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
-  },
   
   // Webpack optimizations
   webpack: (config, { dev, isServer }) => {
