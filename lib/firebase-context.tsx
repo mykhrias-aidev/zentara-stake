@@ -38,26 +38,10 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const autoLogin = () => {
       const testUser: User = {
-        uid: 'test_user_123',
+        id: 'test_user_123',
         email: 'test@example.com',
         displayName: 'Test User',
-        photoURL: null,
-        emailVerified: true,
-        metadata: {
-          creationTime: new Date().toISOString(),
-          lastSignInTime: new Date().toISOString(),
-        },
-        providerData: [],
-        refreshToken: 'test_refresh_token',
-        tenantId: null,
-        delete: async () => {},
-        getIdToken: async () => 'test_token',
-        getIdTokenResult: async () => ({ authTime: '', issuedAtTime: '', signInProvider: null, token: 'test_token', claims: {} }),
-        reload: async () => {},
-        toJSON: () => ({}),
-        phoneNumber: null,
-        providerId: 'password',
-        isAnonymous: false,
+        kycStatus: 'pending'
       }
       setUser(testUser)
       setLoading(false)
@@ -70,20 +54,7 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
 
   const signUpWithEmail = async (email: string, password: string) => {
     try {
-      // Mock implementation - allow specific credentials
-      if (email === 'bash@gmail.com' && password === '123456') {
-        const newUser: User = {
-          id: 'user_bash',
-          email: email,
-          displayName: 'Bash User',
-          kycStatus: 'pending'
-        }
-        setUser(newUser)
-        localStorage.setItem('zentara_user', JSON.stringify(newUser))
-        return
-      }
-      
-      // For other emails, create new user
+      // For testing, always create a user
       const newUser: User = {
         id: 'user_' + Date.now(),
         email: email,
@@ -100,35 +71,15 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
 
   const signInWithEmail = async (email: string, password: string) => {
     try {
-      // Mock implementation - allow specific credentials
-      if (email === 'bash@gmail.com' && password === '123456') {
-        const existingUser: User = {
-          id: 'user_bash',
-          email: email,
-          displayName: 'Bash User',
-          kycStatus: 'pending'
-        }
-        setUser(existingUser)
-        localStorage.setItem('zentara_user', JSON.stringify(existingUser))
-        return
+      // For testing, always log in successfully
+      const testUser: User = {
+        id: 'user_' + Date.now(),
+        email: email,
+        displayName: email.split('@')[0],
+        kycStatus: 'pending'
       }
-      
-      // For other users, check if they exist
-      const savedUser = localStorage.getItem('zentara_user')
-      if (savedUser) {
-        const userData = JSON.parse(savedUser)
-        if (userData.email === email) {
-          setUser(userData)
-          return
-        }
-      }
-      
-      // If we get here, credentials are invalid
-      if (email === 'bash@gmail.com') {
-        throw new Error('Password for bash@gmail.com is 123456 (6 digits)')
-      } else {
-        throw new Error('Invalid email or password. Please check your credentials.')
-      }
+      setUser(testUser)
+      localStorage.setItem('zentara_user', JSON.stringify(testUser))
     } catch (error) {
       console.error('Sign in error:', error)
       throw error

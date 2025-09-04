@@ -33,16 +33,6 @@ export default function SignInPage() {
     }
   }, [user, router])
 
-  // Auto-login for testing - bypass authentication
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!user) {
-        router.push('/dashboard')
-      }
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [user, router])
-
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
