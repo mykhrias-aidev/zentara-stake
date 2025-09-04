@@ -45,6 +45,12 @@ export default function HomePage() {
           <p>✅ All pages functional</p>
           <p>✅ MetaMask integration ready</p>
         </div>
+        
+        <div className="mt-8 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg">
+          <p className="text-sm text-accent-green">
+            <strong>Note:</strong> This is a demo application. For production use, configure real Web3 providers and Firebase.
+          </p>
+        </div>
       </div>
     </div>
   )

@@ -1,228 +1,158 @@
-# Zentara Stake - Cryptocurrency Staking Dashboard
+# Zentara Stake - Staking Dashboard
 
-A modern, responsive cryptocurrency staking platform built with Next.js, featuring MetaMask integration, PWA support, and cross-platform compatibility.
+A modern, responsive staking dashboard built with Next.js, featuring Web3 integration, MetaMask support, and a beautiful dark theme with glass morphism effects.
 
-## 🚀 Features
+## 🌟 Features
 
-- **Cross-Platform MetaMask Integration**
-  - Desktop: MetaMask extension support
-  - Mobile: MetaMask mobile app integration
-  - Automatic platform detection and appropriate wallet handling
+- **Staking Dashboard**: View and manage staking positions
+- **Wallet Integration**: MetaMask connection with cross-platform support
+- **Responsive Design**: Mobile-first design with desktop optimization
+- **Dark Theme**: Beautiful blue theme with glass icons
+- **Auto-Login**: Bypass authentication for testing
+- **PWA Support**: Install as web app
+- **GitHub Pages Ready**: Static export for deployment
 
-- **Progressive Web App (PWA)**
-  - Install prompt for mobile and desktop
-  - App-like experience
-  - Offline capabilities
+## 🚀 Quick Start
 
-- **Responsive Design**
-  - Mobile-first approach
-  - Desktop sidebar navigation
-  - Dark theme with blue accents
+### Local Development
 
-- **Staking Dashboard**
-  - Real-time staking positions
-  - APY tracking
-  - Reward claiming
-  - Network switching (TON, Solana)
+```bash
+# Install dependencies
+npm install
 
-- **Authentication System**
-  - Email/password signup and signin
-  - Google OAuth integration
-  - Mock Firebase backend
+# Start development server
+npm run dev
 
-## 🛠️ Tech Stack
+# Open http://localhost:3000
+```
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS with custom design system
-- **Web3**: Wagmi v2, Viem, MetaMask
-- **Forms**: React Hook Form with Zod validation
-- **Icons**: Lucide React
-- **State Management**: React Context + Hooks
+### GitHub Pages Deployment
 
-## 📱 Platform Support
+This project is configured for GitHub Pages deployment:
 
-### Desktop
-- MetaMask extension integration
-- Full sidebar navigation
-- Enhanced desktop layouts
-
-### Mobile (Android/iOS)
-- MetaMask mobile app integration
-- App store redirects for wallet installation
-- Touch-optimized interface
-- PWA installation prompts
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- MetaMask extension (desktop) or MetaMask mobile app
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd amara
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your configuration
-   ```
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   - Navigate to `http://localhost:3000`
-   - Connect your MetaMask wallet
+1. **Automatic Deployment**: Push to `main` branch triggers GitHub Actions
+2. **Manual Build**: Run `npm run build-static` for local static build
+3. **Static Export**: Configured with `output: 'export'` in Next.js
 
 ## 🔧 Configuration
 
 ### Environment Variables
-Create a `.env.local` file in the root directory:
+
+Create `.env.local` file:
 
 ```env
-# Web3 Configuration
-NEXT_PUBLIC_CHAIN_ID=1
-NEXT_PUBLIC_RPC_URL=https://mainnet.infura.io/v3/YOUR_PROJECT_ID
-
-# Firebase (for production)
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 ```
 
-### MetaMask Setup
-1. Install MetaMask extension (desktop) or MetaMask mobile app
-2. Ensure you're on Ethereum mainnet or Sepolia testnet
-3. Have some test ETH for transactions
+### GitHub Pages Settings
 
-## 📱 PWA Installation
+1. Go to repository Settings > Pages
+2. Source: Deploy from a branch
+3. Branch: `gh-pages` (created by GitHub Actions)
+4. Folder: `/ (root)`
 
-### Mobile
-1. Open the app in your mobile browser
-2. Tap the "Install" banner at the top
-3. Follow the browser's installation prompts
-4. App will be available on your home screen
+## 📱 Platform Support
 
-### Desktop
-1. Open the app in Chrome/Edge
-2. Look for the install icon in the address bar
-3. Click "Install" to add to your desktop
+- **Desktop**: MetaMask extension integration
+- **Mobile**: MetaMask app deep linking
+- **PWA**: Progressive Web App installation
+- **Cross-Browser**: Chrome, Firefox, Safari, Edge
 
 ## 🎨 Design System
 
-### Colors
-- **Primary Background**: `#0a0a0a` (Dark)
-- **Card Background**: `#282840` (Dark Blue)
-- **Accent Blue**: `#3B82F6`
-- **Accent Green**: `#10B981`
-- **Accent Purple**: `#8B5CF6`
-
-### Components
-- Custom Button, Input, and Card components
-- Responsive grid layouts
-- Glass-morphism effects
-- Smooth transitions and hover states
+- **Colors**: Dark blue theme with accent colors
+- **Typography**: Modern, readable fonts
+- **Icons**: Lucide React icon set
+- **Animations**: Smooth transitions and hover effects
+- **Layout**: Glass morphism with rounded corners
 
 ## 🔐 Authentication
 
-### Test Credentials
-- **Email**: `bash@gmail.com`
-- **Password**: `123456`
-
-### Features
-- Form validation with Zod
-- Error handling and user feedback
-- Social login options
-- Password reset functionality
-
-## 🌐 Web3 Features
-
-### Supported Networks
-- Ethereum Mainnet
-- Sepolia Testnet
-- TON Network
-- Solana Network
-
-### Wallet Functions
-- Connect/disconnect MetaMask
-- View wallet balance
-- Switch networks
-- Transaction history
+- **Test Account**: Auto-login enabled
+- **Email**: test@example.com
+- **Password**: Any password works
+- **Google Sign-In**: Mock implementation
+- **MetaMask**: Real Web3 wallet connection
 
 ## 📁 Project Structure
 
 ```
-amara/
-├── app/                    # Next.js App Router
-│   ├── (auth)/           # Authentication pages
-│   ├── (app)/            # Main app pages
-│   ├── globals.css       # Global styles
-│   ├── layout.tsx        # Root layout
-│   └── providers.tsx     # Context providers
-├── components/            # Reusable components
-│   ├── ui/               # Base UI components
-│   ├── staking/          # Staking-specific components
-│   └── PWAInstallPrompt.tsx
-├── lib/                   # Utility libraries
-│   ├── web3-context.tsx  # Web3 context
-│   ├── firebase-context.tsx
-│   └── wagmi.ts          # Wagmi configuration
-├── hooks/                 # Custom React hooks
-└── public/                # Static assets
+app/
+├── (app)/           # Protected app routes
+│   ├── dashboard/   # Main dashboard
+│   ├── staking/     # Staking management
+│   ├── wallet/      # Wallet interface
+│   └── notifications/ # User notifications
+├── (auth)/          # Authentication routes
+│   ├── sign-in/     # Login page
+│   ├── sign-up/     # Registration page
+│   └── forgot-password/ # Password reset
+components/           # Reusable UI components
+lib/                  # Utilities and contexts
+hooks/                # Custom React hooks
+styles/               # Global styles and CSS
 ```
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-1. Connect your GitHub repository to Vercel
-2. Configure environment variables
-3. Deploy automatically on push
+### GitHub Pages (Recommended)
 
-### Other Platforms
-- Netlify
-- Railway
-- DigitalOcean App Platform
+1. Push to `main` branch
+2. GitHub Actions automatically builds and deploys
+3. Site available at: `https://username.github.io/zentara-stake`
+
+### Manual Static Export
+
+```bash
+# Build static version
+npm run build-static
+
+# Deploy to any static hosting service
+# (Netlify, Vercel, AWS S3, etc.)
+```
+
+## 🔧 Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run build-static` - Build static version
+
+### Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Web3**: Wagmi + Viem
+- **Wallet**: MetaMask integration
+- **Forms**: React Hook Form + Zod
+- **Icons**: Lucide React
+- **State**: React Context + Hooks
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-## 📄 License
+## 📞 Support
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-If you encounter any issues:
-1. Check the browser console for errors
-2. Ensure MetaMask is properly installed and connected
-3. Verify you're on a supported network
-4. Check the [Issues](https://github.com/yourusername/amara/issues) page
-
-## 🙏 Acknowledgments
-
-- Next.js team for the amazing framework
-- Wagmi team for Web3 integration
-- Tailwind CSS for the utility-first CSS framework
-- MetaMask team for wallet integration
+For support and questions:
+- Create an issue on GitHub
+- Check the documentation
+- Review the code examples
 
 ---
 
-**Built with ❤️ using Next.js and Web3 technologies**
+**Note**: This is a demo application. For production use, configure real Web3 providers, Firebase, and implement proper security measures.
