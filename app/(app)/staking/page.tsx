@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { useStaking } from '@/hooks/useStaking'
+import { useMobile } from '@/hooks/useMobile'
 import { AddStakeModal } from '@/components/AddStakeModal'
 import { ClaimRewardsModal } from '@/components/ClaimRewardsModal'
+import MobileOptimizedButton from '@/components/MobileOptimizedButton'
 import { Plus, Award, TrendingUp, Clock, DollarSign } from 'lucide-react'
 
 interface StakingPosition {
@@ -19,16 +21,19 @@ interface StakingPosition {
 
 export default function StakingPage() {
   const { stakingPositions, isLoading, addStake, claimRewards } = useStaking()
+  const { hapticFeedback, isMobile } = useMobile()
   const [selectedPosition, setSelectedPosition] = useState<StakingPosition | null>(null)
   const [showAddStakeModal, setShowAddStakeModal] = useState(false)
   const [showClaimModal, setShowClaimModal] = useState(false)
 
   const handleAddStake = (position: StakingPosition) => {
+    if (isMobile) hapticFeedback('light')
     setSelectedPosition(position)
     setShowAddStakeModal(true)
   }
 
   const handleClaimRewards = (position: StakingPosition) => {
+    if (isMobile) hapticFeedback('medium')
     setSelectedPosition(position)
     setShowClaimModal(true)
   }
@@ -148,23 +153,29 @@ export default function StakingPage() {
               </div>
 
               <div className="flex space-x-3">
-                <button
+                <MobileOptimizedButton
                   onClick={() => handleAddStake(position)}
                   disabled={isLoading}
-                  className="flex-1 bg-accent-blue text-white py-3 px-4 rounded-xl font-medium hover:bg-accent-blue/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  variant="primary"
+                  size="md"
+                  hapticType="light"
+                  className="flex-1 flex items-center justify-center space-x-2"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add Stake</span>
-                </button>
+                </MobileOptimizedButton>
                 
-                <button
+                <MobileOptimizedButton
                   onClick={() => handleClaimRewards(position)}
                   disabled={isLoading || position.pendingRewards <= 0}
-                  className="flex-1 bg-accent-green text-white py-3 px-4 rounded-xl font-medium hover:bg-accent-green/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  variant="glass-green"
+                  size="md"
+                  hapticType="success"
+                  className="flex-1 flex items-center justify-center space-x-2"
                 >
                   <Award className="h-4 w-4" />
                   <span>Claim Rewards</span>
-                </button>
+                </MobileOptimizedButton>
               </div>
             </div>
           ))}

@@ -1,11 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useFirebase } from '@/lib/firebase-context'
 import { useWeb3 } from '@/lib/web3-context'
 import { useTheme } from '@/lib/theme-context'
+import { useMobile } from '@/hooks/useMobile'
+import { useSwipeGestures } from '@/hooks/useSwipeGestures'
+import { usePullToRefresh } from '@/hooks/usePullToRefresh'
+import PullToRefreshIndicator from '@/components/PullToRefreshIndicator'
+import MobileOptimizedButton from '@/components/MobileOptimizedButton'
+import EnhancedPWAPrompt from '@/components/EnhancedPWAPrompt'
+import PerformanceOptimizer from '@/components/PerformanceOptimizer'
 import { 
   Grid, 
   Wallet, 
@@ -33,11 +40,54 @@ const navigation = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const { user, signOut, loading } = useFirebase()
   const { address, isConnected, connect, disconnect } = useWeb3()
   const { theme, toggleTheme } = useTheme()
+  const { hapticFeedback, isMobile, isIOS, isStandalone, isLowEndDevice } = useMobile()
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mainContentRef = useRef<HTMLElement>(null)
+
+  // Pull to refresh functionality
+  const { attachListeners: attachPullToRefresh, isRefreshing, pullDistance, shouldShowIndicator } = usePullToRefresh({
+    onRefresh: async () => {
+      // Refresh current page data
+      if (typeof window !== 'undefined') {
+        window.location.reload()
+      }
+    },
+    enabled: isMobile
+  })
+
+  // Swipe gestures for navigation
+  const { attachListeners: attachSwipeGestures } = useSwipeGestures({
+    onSwipeRight: () => {
+      if (!isMobileMenuOpen && isMobile) {
+        hapticFeedback('light')
+        setIsMobileMenuOpen(true)
+      }
+    },
+    onSwipeLeft: () => {
+      if (isMobileMenuOpen && isMobile) {
+        hapticFeedback('light')
+        setIsMobileMenuOpen(false)
+      }
+    }
+  })
+
+  // Attach listeners
+  useEffect(() => {
+    if (!isMobile || !mainContentRef.current) return
+    
+    const cleanup1 = attachPullToRefresh(mainContentRef.current)
+    const cleanup2 = attachSwipeGestures(mainContentRef.current)
+    
+    return () => {
+      cleanup1?.()
+      cleanup2?.()
+    }
+  }, [attachPullToRefresh, attachSwipeGestures, isMobile])
 
   // Show loading spinner while checking authentication
   if (loading) {
@@ -76,20 +126,34 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   const handleSignOut = async () => {
+    if (isMobile) hapticFeedback('medium')
     await signOut()
     setIsProfileMenuOpen(false)
   }
 
   const handleConnectWallet = async () => {
+    if (isMobile) hapticFeedback('light')
     try {
       await connect()
     } catch (error) {
       console.error('Failed to connect wallet:', error)
+      if (isMobile) hapticFeedback('error')
     }
   }
 
   const handleDisconnectWallet = () => {
+    if (isMobile) hapticFeedback('light')
     disconnect()
+  }
+
+  const handleThemeToggle = () => {
+    if (isMobile) hapticFeedback('light')
+    toggleTheme()
+  }
+
+  const handleMobileMenuToggle = () => {
+    if (isMobile) hapticFeedback('light')
+    setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
   const shortenedAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ''
@@ -186,7 +250,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           />
           
           {/* Mobile Sidebar */}
-          <div className="fixed left-0 top-0 h-full w-80 bg-bg-secondary border-r border-border-light slide-in-left">
+          <div className="fixed left-0 top-0 h-full w-80 bg-bg-secondary/90 backdrop-blur-lg border-r border-blue-400/20 slide-in-left" style={{backgroundColor: 'rgba(30, 41, 59, 0.85)', backdropFilter: 'blur(20px)', borderColor: 'rgba(59, 130, 246, 0.2)'}}>
             <div className="h-full flex flex-col p-6">
               {/* Mobile Header with Close Button */}
               <div className="flex items-center justify-between mb-8">
@@ -236,40 +300,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 })}
               </nav>
 
-              {/* Mobile Wallet Connection */}
-              <div className="mb-6">
-                {isConnected ? (
-                  <div className="bg-bg-primary rounded-xl p-4 border border-border-light">
-                    <div className="text-xs text-text-secondary mb-1">Wallet Connected</div>
-                    <div className="text-sm font-medium text-text-primary mb-2">{shortenedAddress}</div>
-                    <button
-                      onClick={handleDisconnectWallet}
-                      className="text-xs text-red-400 hover:text-red-300"
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleConnectWallet}
-                    className="w-full btn-glass-blue py-4 text-lg"
-                  >
-                    Connect Wallet
-                  </button>
-                )}
-              </div>
-
-              {/* Spacer */}
+              {/* Spacer to push content to bottom if needed */}
               <div className="flex-1"></div>
 
-              {/* Mobile User Display */}
-              <div className="flex items-center space-x-3 p-4 rounded-xl bg-white/5">
-                <div className="w-10 h-10 bg-accent-purple rounded-full flex items-center justify-center">
-                  <User className="h-5 w-5 text-white" />
+              {/* Mobile User Display (Simple) */}
+              <div className="flex items-center space-x-3 p-3 rounded-xl bg-white/5">
+                <div className="w-8 h-8 bg-accent-purple rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-white" />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="text-base font-medium text-text-primary">Philips@gmail.com</div>
-                  <div className="text-sm text-text-secondary">{shortenedAddress || 'Not connected'}</div>
+                  <div className="text-sm font-medium text-text-primary">Philips@gmail.com</div>
+                  <div className="text-xs text-text-secondary">Quick access via top nav</div>
                 </div>
               </div>
             </div>
@@ -277,57 +318,41 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      {/* Mobile Header */}
-      <div className="lg:hidden bg-bg-secondary border-b border-border-light px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Mobile Menu Button and Logo */}
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="btn-glass p-2 rounded-xl"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-green-500 p-1">
-                <div className="relative h-4 w-4">
-                  <div className="absolute inset-0">
-                    <div className="h-0.5 w-3 bg-white transform rotate-45 origin-left"></div>
-                    <div className="h-0.5 w-3 bg-white transform -rotate-45 origin-right mt-1"></div>
-                    <div className="h-0.5 w-3 bg-white transform rotate-45 origin-left mt-2"></div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="text-lg font-bold text-white">Zentara</div>
-                <div className="text-xs font-semibold text-green-400">Stake</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="btn-glass p-2 rounded-xl"
-            title={`Current: ${theme} theme. Click to switch.`}
-          >
-            {theme === 'default' ? (
-              <Palette className="h-5 w-5 text-blue-400" />
-            ) : theme === 'dark' ? (
-              <Moon className="h-5 w-5 text-gray-300" />
-            ) : (
-              <Sun className="h-5 w-5 text-yellow-400" />
-            )}
-          </button>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="lg:ml-64">
         {/* Top Header */}
-        <header className="bg-bg-secondary border-b border-border-light px-8 py-4">
+        <header className="bg-bg-secondary border-b border-border-light px-4 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              {/* Mobile Menu Button and Logo (Mobile Only) */}
+              <div className="lg:hidden flex items-center space-x-2">
+                <MobileOptimizedButton
+                  onClick={handleMobileMenuToggle}
+                  variant="glass"
+                  size="sm"
+                  hapticType="light"
+                  className="p-1.5 rounded-lg"
+                >
+                  <Menu className="h-5 w-5" />
+                </MobileOptimizedButton>
+                <div className="flex items-center space-x-1.5">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-green-500 p-1">
+                    <div className="relative h-3 w-3">
+                      <div className="absolute inset-0">
+                        <div className="h-0.5 w-2 bg-white transform rotate-45 origin-left"></div>
+                        <div className="h-0.5 w-2 bg-white transform -rotate-45 origin-right mt-0.5"></div>
+                        <div className="h-0.5 w-2 bg-white transform rotate-45 origin-left mt-1"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-white">Zentara</div>
+                    <div className="text-xs font-semibold text-green-400">Stake</div>
+                  </div>
+                </div>
+              </div>
+
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
@@ -346,7 +371,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               {/* Wallet Connection */}
               {isConnected ? (
                 <div className="flex items-center space-x-2 bg-bg-primary rounded-xl px-4 py-2">
-                  <span className="text-text-secondary text-sm">Connected:</span>
+                  <span className="text-text-secondary text-sm hidden lg:inline">Connected:</span>
                   <span className="text-text-primary font-medium text-sm">{shortenedAddress}</span>
                   <button
                     onClick={handleDisconnectWallet}
@@ -358,9 +383,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               ) : (
                 <button
                   onClick={handleConnectWallet}
-                  className="btn-glass-blue"
+                  className="btn-glass-blue text-sm lg:text-base px-3 lg:px-4 py-2"
                 >
-                  Connect Wallet
+                  <span className="hidden lg:inline">Connect Wallet</span>
+                  <span className="lg:hidden">Connect</span>
                 </button>
               )}
             </div>
@@ -444,7 +470,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page Content */}
-        <main className="min-h-screen bg-gradient-to-br from-blue-900 via-bg-primary to-purple-900 p-8">
+        <main 
+          ref={mainContentRef}
+          className={`min-h-screen bg-gradient-to-br from-blue-900 via-bg-primary to-purple-900 p-8 ${
+            isMobile ? 'touch-pan-y' : ''
+          } ${isIOS && isStandalone ? 'pt-safe pb-safe' : ''}`}
+          style={{
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain'
+          }}
+        >
+          {shouldShowIndicator && (
+            <PullToRefreshIndicator 
+              pullDistance={pullDistance}
+              isRefreshing={isRefreshing}
+            />
+          )}
           {children}
         </main>
       </div>
@@ -456,6 +497,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           onClick={() => setIsProfileMenuOpen(false)}
         />
       )}
+
+      {/* Enhanced PWA Install Prompt */}
+      <EnhancedPWAPrompt />
+      
+      {/* Performance Optimizer */}
+      <PerformanceOptimizer />
     </div>
   )
 }

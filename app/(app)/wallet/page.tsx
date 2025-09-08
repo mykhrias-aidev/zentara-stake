@@ -4,8 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Copy, ExternalLink, Send, Download } from 'lucide-react'
 import { useWeb3 } from '@/lib/web3-context'
+import { useCrypto } from '@/hooks/useCrypto'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import WalletActions from '@/components/WalletActions'
+import TransactionHistory from '@/components/TransactionHistory'
 
 export default function WalletPage() {
   const router = useRouter()
@@ -33,14 +36,19 @@ export default function WalletPage() {
     }
   }
 
+  const { exportWallet } = useCrypto()
+  const [showSendModal, setShowSendModal] = useState(false)
+
   const handleSend = () => {
-    // In a real app, this would open a send transaction modal
-    alert('Send functionality would be implemented here')
+    setShowSendModal(true)
   }
 
-  const handleExport = () => {
-    // In a real app, this would export wallet data
-    alert('Export functionality would be implemented here')
+  const handleExport = async () => {
+    try {
+      await exportWallet()
+    } catch (err) {
+      console.error('Export failed:', err)
+    }
   }
 
   if (!isConnected) {
@@ -163,18 +171,11 @@ export default function WalletPage() {
           </CardContent>
         </Card>
 
+        {/* Wallet Actions */}
+        <WalletActions />
+
         {/* Transaction History */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-text-primary">Recent Transactions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-text-secondary">
-              <p>No recent transactions</p>
-              <p className="text-sm">Your transaction history will appear here</p>
-            </div>
-          </CardContent>
-        </Card>
+        <TransactionHistory />
       </div>
     </div>
   )

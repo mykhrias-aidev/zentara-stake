@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { TrendingUp, Wallet, DollarSign, Clock, Grid, BarChart3, Bell, Diamond, Download } from 'lucide-react'
 import { useWeb3 } from '@/lib/web3-context'
 import { useStaking } from '@/hooks/useStaking'
+import CryptoPrices from '@/components/CryptoPrices'
+import TransactionHistory from '@/components/TransactionHistory'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 
 export default function DashboardPage() {
@@ -186,13 +188,13 @@ export default function DashboardPage() {
             <button
               key={network.id}
               onClick={() => handleNetworkSelect(network.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all whitespace-nowrap ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all duration-300 whitespace-nowrap group ${
                 network.isActive
-                  ? 'bg-accent-blue border-accent-blue text-white'
-                  : 'bg-transparent border-border-light text-text-secondary hover:border-accent-blue/50'
+                  ? 'bg-accent-blue border-accent-blue text-white scale-105 shadow-lg shadow-accent-blue/25'
+                  : 'bg-transparent border-border-light text-text-secondary hover:border-accent-blue/50 hover:scale-105 hover:bg-accent-blue/10 hover:shadow-md'
               }`}
             >
-              <network.icon className={`h-4 w-4 ${network.color}`} />
+              <network.icon className={`h-4 w-4 ${network.color} group-hover:rotate-12 transition-transform duration-300`} />
               <span className="text-sm font-medium">{network.name}</span>
               <span className="text-xs">{network.apy}</span>
             </button>
@@ -261,29 +263,36 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
           <button 
             onClick={handleAddStake}
-            className="bg-accent-blue text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-blue/80 transition-all duration-200 flex items-center justify-center space-x-2"
+            className="bg-accent-blue text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-blue/80 hover:scale-105 hover:shadow-xl hover:shadow-accent-blue/25 transition-all duration-300 flex items-center justify-center space-x-2 group"
           >
-            <TrendingUp className="h-4 w-4 md:h-5 md:w-5" />
+            <TrendingUp className="h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
             <span className="text-sm md:text-base">Add Stake</span>
           </button>
           
           <button 
             onClick={handleClaimRewards}
-            className="bg-accent-green text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-green/80 transition-all duration-200 flex items-center justify-center space-x-2"
+            className="bg-accent-green text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-green/80 hover:scale-105 hover:shadow-xl hover:shadow-accent-green/25 transition-all duration-300 flex items-center justify-center space-x-2 group"
           >
-            <DollarSign className="h-4 w-4 md:h-5 md:w-5" />
+            <DollarSign className="h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
             <span className="text-sm md:text-base">Claim Rewards</span>
           </button>
           
           <button 
             onClick={handleViewWallet}
-            className="bg-accent-purple text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-purple/80 transition-all duration-200 flex items-center justify-center space-x-2"
+            className="bg-accent-purple text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-purple/80 hover:scale-105 hover:shadow-xl hover:shadow-accent-purple/25 transition-all duration-300 flex items-center justify-center space-x-2 group"
           >
-            <Wallet className="h-4 w-4 md:h-5 md:w-5" />
+            <Wallet className="h-4 w-4 md:h-5 md:w-5 group-hover:rotate-12 transition-transform duration-300" />
             <span className="text-sm md:text-base">View Wallet</span>
           </button>
         </div>
       </div>
+
+
+      {/* Real-time Crypto Prices */}
+      <CryptoPrices />
+
+      {/* Transaction History */}
+      {isConnected && <TransactionHistory />}
     </div>
   )
 }
