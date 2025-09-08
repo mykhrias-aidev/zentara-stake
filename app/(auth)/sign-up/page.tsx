@@ -1,58 +1,54 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Eye, EyeOff, Mail, Lock, Apple } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import { useFirebase } from '@/lib/firebase-context'
-
-const formSchema = z
-  .object({
-    email: z.string().email({ message: 'Invalid email address' }),
-    password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-    confirmPassword: z.string(),
-    terms: z.boolean().refine((val) => val === true, {
-      message: 'You must accept the terms and conditions',
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  })
-
-type SignUpFormValues = z.infer<typeof formSchema>
 
 export default function SignUpPage() {
   const router = useRouter()
   const { signUpWithEmail, signInWithGoogle } = useFirebase()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const form = useForm<SignUpFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      terms: false,
-    },
-  })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!email || !password || !confirmPassword) {
+      setError('Please fill in all fields')
+      return
+    }
 
-  const onSubmit = async (values: SignUpFormValues) => {
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (!termsAccepted) {
+      setError('You must accept the terms and conditions')
+      return
+    }
+
     setLoading(true)
     setError(null)
+    
     try {
-      await signUpWithEmail(values.email, values.password)
-      router.push('/staking')
+      await signUpWithEmail(email, password)
+      router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message || 'Failed to sign up. Please try again.')
+      setError(err.message || 'Failed to create account. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -63,7 +59,7 @@ export default function SignUpPage() {
     setError(null)
     try {
       await signInWithGoogle()
-      router.push('/staking')
+      router.push('/dashboard')
     } catch (err: any) {
       setError(err.message || 'Failed to sign up with Google. Please try again.')
     } finally {
@@ -71,219 +67,192 @@ export default function SignUpPage() {
     }
   }
 
-  const handleAppleSignUp = () => {
-    setError('Apple Sign-Up is not yet implemented.')
-  }
-
-  const handleSignIn = () => {
-    router.push('/sign-in')
-  }
-
-  const handlePrivacyPolicy = () => {
-    // In a real app, this would navigate to privacy policy page
-    window.open('#', '_blank')
-  }
-
-  const handleTermsConditions = () => {
-    // In a real app, this would navigate to terms page
-    window.open('#', '_blank')
-  }
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
-      <Card className="w-full max-w-2xl animate-fade-in">
-        <CardHeader className="text-center">
-          {/* Zentara Stake Logo */}
-          <div className="mx-auto mb-6 flex items-center space-x-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-green-500 p-2">
-              <div className="relative h-8 w-8">
-                {/* Z with arrows icon */}
-                <div className="absolute inset-0">
-                  <div className="h-0.5 w-6 bg-white transform rotate-45 origin-left"></div>
-                  <div className="h-0.5 w-6 bg-white transform -rotate-45 origin-right mt-2"></div>
-                  <div className="h-0.5 w-6 bg-white transform rotate-45 origin-left mt-4"></div>
-                </div>
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-green-500 p-2 mx-auto mb-4">
+            <div className="relative h-8 w-8">
+              <div className="absolute inset-0">
+                <div className="h-0.5 w-6 bg-white transform rotate-45 origin-left"></div>
+                <div className="h-0.5 w-6 bg-white transform -rotate-45 origin-right mt-2"></div>
+                <div className="h-0.5 w-6 bg-white transform rotate-45 origin-left mt-4"></div>
               </div>
-            </div>
-            <div className="text-left">
-              <div className="text-xl font-bold text-white">Zentara</div>
-              <div className="text-lg font-semibold text-green-400">Stake</div>
             </div>
           </div>
-          
-          <CardTitle className="text-3xl font-bold text-text-primary">Sign Up Account</CardTitle>
-          <p className="text-text-secondary text-lg">Enter your personal data to create your account</p>
-        </CardHeader>
-        
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <h1 className="text-3xl font-bold text-white mb-2">Zentara</h1>
+          <h2 className="text-2xl font-semibold text-green-400">Stake</h2>
+          <p className="text-text-secondary mt-2">Create your account</p>
+        </div>
+
+        {/* Sign Up Form */}
+        <div className="bg-bg-secondary rounded-3xl p-8 border border-border-light">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-text-primary">Email address</label>
-              <Input
-                type="email"
-                placeholder="Enter Email address"
-                leftIcon={<Mail className="h-4 w-4 text-text-muted" />}
-                {...form.register('email')}
-                error={form.formState.errors.email?.message}
-              />
+            <div>
+              <label htmlFor="email" className="block text-text-primary text-sm font-medium mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-bg-primary border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
             </div>
 
-            {/* Password Fields - Two Column Layout for PC */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-text-primary">Password</label>
-                <Input
+            {/* Password Field */}
+            <div>
+              <label htmlFor="password" className="block text-text-primary text-sm font-medium mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+                <input
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Password***"
-                  leftIcon={<Lock className="h-4 w-4 text-text-muted" />}
-                  rightIcon={
-                    showPassword ? (
-                      <EyeOff
-                        className="h-4 w-4 cursor-pointer text-text-muted"
-                        onClick={() => setShowPassword(false)}
-                      />
-                    ) : (
-                      <Eye
-                        className="h-4 w-4 cursor-pointer text-text-muted"
-                        onClick={() => setShowPassword(true)}
-                      />
-                    )
-                  }
-                  {...form.register('password')}
-                  error={form.formState.errors.password?.message}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-12 py-3 bg-bg-primary border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                  placeholder="Create a password"
+                  required
+                  minLength={6}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-text-primary">Confirm Password</label>
-                <Input
+            </div>
+
+            {/* Confirm Password Field */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-text-primary text-sm font-medium mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+                <input
+                  id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm Password***"
-                  leftIcon={<Lock className="h-4 w-4 text-text-muted" />}
-                  rightIcon={
-                    showConfirmPassword ? (
-                      <EyeOff
-                        className="h-4 w-4 cursor-pointer text-text-muted"
-                        onClick={() => setShowConfirmPassword(false)}
-                      />
-                    ) : (
-                      <Eye
-                        className="h-4 w-4 cursor-pointer text-text-muted"
-                        onClick={() => setShowConfirmPassword(true)}
-                      />
-                    )
-                  }
-                  {...form.register('confirmPassword')}
-                  error={form.formState.errors.confirmPassword?.message}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full pl-10 pr-12 py-3 bg-bg-primary border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                  placeholder="Confirm your password"
+                  required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
 
-            {/* Social Sign-Up Section */}
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border-light" />
-              </div>
-              <div className="relative flex justify-center text-sm uppercase">
-                <span className="bg-bg-primary px-4 text-text-muted">Or</span>
-              </div>
-            </div>
-
-            {/* Social Buttons - Side by Side for PC */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full h-12 text-base"
-                onClick={handleGoogleSignUp}
-                disabled={loading}
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">G</div>
-                  <span>Sign up with Google</span>
-                </div>
-              </Button>
-              
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full h-12 text-base"
-                onClick={handleAppleSignUp}
-                disabled={loading}
-              >
-                <Apple className="mr-2 h-5 w-5" />
-                Sign up with Apple
-              </Button>
-            </div>
-
-            {/* Terms and Conditions */}
+            {/* Terms Checkbox */}
             <div className="flex items-start space-x-3">
               <input
-                type="checkbox"
                 id="terms"
-                className="h-5 w-5 rounded border-border-light bg-bg-input text-accent-green focus:ring-accent-green mt-1"
-                {...form.register('terms')}
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-1 h-4 w-4 text-accent-blue border-border-light rounded focus:ring-accent-blue"
+                required
               />
-              <label htmlFor="terms" className="text-sm text-text-secondary leading-relaxed">
-                I agree with{' '}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="text-accent-green hover:underline p-0 h-auto"
-                  onClick={handlePrivacyPolicy}
-                >
-                  Privacy & Policy
-                </Button>{' '}
+              <label htmlFor="terms" className="text-text-secondary text-sm">
+                I agree to the{' '}
+                <Link href="/terms" className="text-accent-blue hover:text-accent-blue/80">
+                  Terms of Service
+                </Link>{' '}
                 and{' '}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="text-accent-green hover:underline p-0 h-auto"
-                  onClick={handleTermsConditions}
-                >
-                  Terms & Condition
-                </Button>
+                <Link href="/privacy" className="text-accent-blue hover:text-accent-blue/80">
+                  Privacy Policy
+                </Link>
               </label>
             </div>
-            
-            {form.formState.errors.terms && (
-              <p className="text-sm text-red-500">{form.formState.errors.terms.message}</p>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
             )}
-            
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            
+
+            {/* Test Credentials Note */}
+            <div className="bg-accent-green/10 border border-accent-green/20 rounded-xl p-3">
+              <p className="text-accent-green text-sm text-center">
+                <strong>For Testing:</strong> Use any email/password (min 6 chars)
+              </p>
+            </div>
+
             {/* Sign Up Button */}
-            <Button type="submit" className="w-full h-12 text-lg font-semibold" disabled={loading}>
-              {loading ? 'Signing Up...' : 'Sign Up Now'}
-            </Button>
-          </form>
-
-          {/* Test Credentials Note */}
-          <div className="mt-4 p-3 bg-accent-blue/10 border border-accent-blue/20 rounded-lg">
-            <p className="text-xs text-accent-blue text-center">
-              <strong>Test Account:</strong> bash@gmail.com / 123456
-            </p>
-          </div>
-
-          {/* Login Link */}
-          <p className="mt-8 text-center text-text-secondary">
-            Already have an account?{' '}
-            <Button
-              type="button"
-              variant="ghost"
-              className="text-accent-green hover:underline font-medium p-0 h-auto"
-              onClick={handleSignIn}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-accent-blue text-white py-3 px-4 rounded-xl font-medium hover:bg-accent-blue/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              Login
-            </Button>
-          </p>
-        </CardContent>
-        
-        <CardFooter className="text-center text-xs text-text-muted">
-          <p>&copy; 2023 Zentara Stake. All rights reserved.</p>
-        </CardFooter>
-      </Card>
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                  Creating Account...
+                </>
+              ) : (
+                'Create Account'
+              )}
+            </button>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border-light"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-bg-secondary text-text-secondary">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Social Sign Up */}
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={handleGoogleSignUp}
+                disabled={loading}
+                className="w-full bg-white text-gray-900 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 transition-colors border border-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+              </button>
+            </div>
+
+            {/* Links */}
+            <div className="text-center">
+              <p className="text-text-secondary text-sm">
+                Already have an account?{' '}
+                <Link href="/sign-in" className="text-accent-blue hover:text-accent-blue/80">
+                  Sign in
+                </Link>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }

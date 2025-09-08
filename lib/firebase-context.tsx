@@ -34,22 +34,24 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Auto-login for testing - bypass authentication
+  // Check for stored user on app start
   useEffect(() => {
-    const autoLogin = () => {
-      const testUser: User = {
-        id: 'test_user_123',
-        email: 'test@example.com',
-        displayName: 'Test User',
-        kycStatus: 'pending'
+    const checkStoredUser = () => {
+      try {
+        const storedUser = localStorage.getItem('zentara_user')
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser)
+          setUser(parsedUser)
+        }
+      } catch (error) {
+        console.error('Error loading stored user:', error)
+        localStorage.removeItem('zentara_user')
       }
-      setUser(testUser)
       setLoading(false)
     }
 
-    // Auto-login after 1 second for testing
-    const timer = setTimeout(autoLogin, 1000)
-    return () => clearTimeout(timer)
+    // Check for stored user
+    checkStoredUser()
   }, [])
 
   const signUpWithEmail = async (email: string, password: string) => {
@@ -100,8 +102,17 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
-    setUser(null)
-    localStorage.removeItem('zentara_user')
+    try {
+      setUser(null)
+      localStorage.removeItem('zentara_user')
+      // Redirect to sign-in page after sign out
+      if (typeof window !== 'undefined') {
+        window.location.href = '/sign-in'
+      }
+    } catch (error) {
+      console.error('Sign out error:', error)
+      throw error
+    }
   }
 
   return (

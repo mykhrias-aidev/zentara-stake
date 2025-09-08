@@ -106,49 +106,48 @@ export default function DashboardPage() {
     setShowInstallPrompt(true)
   }
 
-  if (!isConnected) {
-    return (
-      <div className="min-h-screen bg-bg-primary flex items-center justify-center p-4">
-        <div className="text-center">
-          <Wallet size={64} className="text-text-secondary mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-text-primary mb-2">Wallet Not Connected</h2>
-          <p className="text-text-secondary mb-6">
-            {isMobile 
-              ? 'Connect your MetaMask mobile app to view your dashboard.'
-              : 'Connect your MetaMask extension to view your dashboard.'
-            }
-          </p>
+  // Wallet connection component for sidebar
+  const WalletConnectionCard = () => (
+    <div className="bg-accent-blue/10 border-2 border-accent-blue/20 rounded-3xl p-6 mb-8">
+      <div className="text-center">
+        <Wallet size={48} className="text-accent-blue mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-text-primary mb-2">Connect Wallet</h3>
+        <p className="text-text-secondary mb-6 text-sm">
+          {isMobile 
+            ? 'Connect MetaMask mobile app to start staking and earning rewards.'
+            : 'Connect MetaMask extension to start staking and earning rewards.'
+          }
+        </p>
+        
+        <div className="space-y-3">
+          <button 
+            onClick={handleConnectWallet}
+            className="bg-accent-blue text-white px-6 py-3 rounded-xl font-medium hover:bg-accent-blue/80 transition-colors w-full"
+          >
+            {isMetaMaskInstalled ? 'Connect Wallet' : 'Install MetaMask'}
+          </button>
           
-          <div className="space-y-3">
+          {isMobile && !isMetaMaskInstalled && (
             <button 
-              onClick={handleConnectWallet}
-              className="bg-accent-blue text-white px-6 py-3 rounded-xl font-medium hover:bg-accent-blue/80 transition-colors w-full"
+              onClick={openMetaMaskApp}
+              className="bg-accent-green text-white px-4 py-2 rounded-xl font-medium hover:bg-accent-green/80 transition-colors w-full text-sm"
             >
-              {isMetaMaskInstalled ? 'Connect Wallet' : 'Install MetaMask'}
+              Download MetaMask App
             </button>
-            
-            {isMobile && !isMetaMaskInstalled && (
-              <button 
-                onClick={openMetaMaskApp}
-                className="bg-accent-green text-white px-6 py-3 rounded-xl font-medium hover:bg-accent-green/80 transition-colors w-full"
-              >
-                Download MetaMask App
-              </button>
-            )}
-            
-            {!isMobile && !isMetaMaskInstalled && (
-              <button 
-                onClick={installMetaMask}
-                className="bg-accent-green text-white px-6 py-3 rounded-xl font-medium hover:bg-accent-green/80 transition-colors w-full"
-              >
-                Install MetaMask Extension
-              </button>
-            )}
-          </div>
+          )}
+          
+          {!isMobile && !isMetaMaskInstalled && (
+            <button 
+              onClick={installMetaMask}
+              className="bg-accent-green text-white px-4 py-2 rounded-xl font-medium hover:bg-accent-green/80 transition-colors w-full text-sm"
+            >
+              Install MetaMask Extension
+            </button>
+          )}
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 
   const shortenedAddress = address ? `${address.slice(0, 6)}u${address.slice(7, 12)}...${address.slice(-8)}` : '0x657u5619...csa87ggds'
 
@@ -208,6 +207,13 @@ export default function DashboardPage() {
             </button>
           </div>
         </div>
+
+        {/* Wallet Connection Card for Mobile (if not connected) */}
+        {!isConnected && (
+          <div className="p-4">
+            <WalletConnectionCard />
+          </div>
+        )}
 
         {/* Network Pills */}
         <div className="p-4">
@@ -382,6 +388,13 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* Wallet Connection Card for Desktop (if not connected) */}
+            {!isConnected && (
+              <div className="mb-8">
+                <WalletConnectionCard />
+              </div>
+            )}
 
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

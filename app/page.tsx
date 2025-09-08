@@ -1,14 +1,23 @@
 'use client'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useFirebase } from '@/lib/firebase-context'
 
 export default function HomePage() {
   const router = useRouter()
+  const { user, loading } = useFirebase()
 
   useEffect(() => {
-    // Redirect to dashboard immediately
-    router.push('/dashboard')
-  }, [router])
+    if (!loading) {
+      if (user) {
+        // User is authenticated, redirect to dashboard
+        router.push('/dashboard')
+      } else {
+        // User is not authenticated, redirect to sign-in
+        router.push('/sign-in')
+      }
+    }
+  }, [user, loading, router])
 
   return (
     <div className="min-h-screen bg-bg-primary flex items-center justify-center">

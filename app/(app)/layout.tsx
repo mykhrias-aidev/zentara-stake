@@ -26,9 +26,29 @@ const navigation = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { user, signOut } = useFirebase()
+  const { user, signOut, loading } = useFirebase()
   const { address, isConnected, connect, disconnect } = useWeb3()
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-green mx-auto mb-4"></div>
+          <p className="text-text-primary">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect to sign-in if not authenticated
+  if (!user) {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/sign-in'
+    }
+    return null
+  }
 
   const handleSignOut = async () => {
     await signOut()
