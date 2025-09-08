@@ -152,335 +152,136 @@ export default function DashboardPage() {
   const shortenedAddress = address ? `${address.slice(0, 6)}u${address.slice(7, 12)}...${address.slice(-8)}` : '0x657u5619...csa87ggds'
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="w-full">
       {/* PWA Install Prompt */}
       {showInstallPrompt && (
         <PWAInstallPrompt onClose={() => setShowInstallPrompt(false)} />
       )}
 
-      {/* Mobile Layout */}
-      <div className="lg:hidden">
-        {/* Header */}
-        <div className="bg-bg-secondary border-b border-border-light p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {/* Zentara Stake Logo */}
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-green-500 p-2">
-                <div className="relative h-6 w-6">
-                  {/* Z with arrows icon */}
-                  <div className="absolute inset-0">
-                    <div className="h-0.5 w-4 bg-white transform rotate-45 origin-left"></div>
-                    <div className="h-0.5 w-4 bg-white transform -rotate-45 origin-right mt-1.5"></div>
-                    <div className="h-0.5 w-4 bg-white transform rotate-45 origin-left mt-3"></div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="text-lg font-bold text-white">Zentara</div>
-                <div className="text-sm font-semibold text-green-400">Stake</div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <div className="text-sm text-text-secondary">Connected</div>
-                <div className="text-sm font-medium text-text-primary">{shortenedAddress}</div>
-              </div>
-              <div className="w-8 h-8 bg-accent-blue rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">P</span>
-              </div>
-            </div>
+      {/* Mobile Install Banner */}
+      <div className="md:hidden bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-3 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Download className="h-4 w-4 text-accent-blue" />
+            <span className="text-sm text-accent-blue font-medium">Install Zentara Stake App</span>
           </div>
-        </div>
-
-        {/* Install App Banner for Mobile */}
-        <div className="bg-accent-blue/10 border-b border-accent-blue/20 p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Download className="h-4 w-4 text-accent-blue" />
-              <span className="text-sm text-accent-blue font-medium">Install Zentara Stake App</span>
-            </div>
-            <button 
-              onClick={handleInstallApp}
-              className="text-xs bg-accent-blue text-white px-3 py-1 rounded-lg hover:bg-accent-blue/80 transition-colors"
-            >
-              Install
-            </button>
-          </div>
-        </div>
-
-        {/* Wallet Connection Card for Mobile (if not connected) */}
-        {!isConnected && (
-          <div className="p-4">
-            <WalletConnectionCard />
-          </div>
-        )}
-
-        {/* Network Pills */}
-        <div className="p-4">
-          <div className="flex space-x-2 overflow-x-auto pb-2">
-            {networks.map((network) => (
-              <button
-                key={network.id}
-                onClick={() => handleNetworkSelect(network.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all ${
-                  network.isActive
-                    ? 'bg-accent-blue border-accent-blue text-white'
-                    : 'bg-transparent border-border-light text-text-secondary hover:border-accent-blue/50'
-                }`}
-              >
-                <network.icon className={`h-4 w-4 ${network.color}`} />
-                <span className="text-sm font-medium">{network.name}</span>
-                <span className="text-xs">{network.apy}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Overview Cards */}
-        <div className="px-4 space-y-4 mb-8">
-          <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-text-primary">Total Staked</h3>
-              <div className="w-10 h-10 bg-accent-green/20 rounded-xl flex items-center justify-center">
-                <TrendingUp size={20} className="text-accent-green" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-text-primary mb-2">
-              ${totalStaked.toLocaleString()}
-            </div>
-            <p className="text-text-secondary text-sm">Across all networks</p>
-          </div>
-
-          <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-text-primary">Pending Rewards</h3>
-              <div className="w-10 h-10 bg-accent-blue/20 rounded-xl flex items-center justify-center">
-                <DollarSign size={20} className="text-accent-blue" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-accent-green mb-2">
-              ${totalPendingRewards.toLocaleString()}
-            </div>
-            <p className="text-text-secondary text-sm">Ready to claim</p>
-          </div>
-
-          <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-text-primary">Total Earned</h3>
-              <div className="w-10 h-10 bg-accent-purple/20 rounded-xl flex items-center justify-center">
-                <Wallet size={20} className="text-accent-purple" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-text-primary mb-2">
-              ${totalEarned.toLocaleString()}
-            </div>
-            <p className="text-text-secondary text-sm">Lifetime earnings</p>
-          </div>
-
-          <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-text-primary">Average APY</h3>
-              <div className="w-10 h-10 bg-accent-orange/20 rounded-xl flex items-center justify-center">
-                <Clock size={20} className="text-accent-orange" />
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-accent-green mb-2">
-              {averageAPY.toFixed(1)}%
-            </div>
-            <p className="text-text-secondary text-sm">Current rate</p>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="px-4 mb-8">
-          <h3 className="text-xl font-semibold text-text-primary mb-6">Quick Actions</h3>
-          <div className="grid grid-cols-1 gap-4">
-            <button 
-              onClick={handleAddStake}
-              className="bg-accent-blue text-white p-4 rounded-xl font-medium hover:bg-accent-blue/80 transition-all duration-200 flex items-center justify-center space-x-2"
-            >
-              <TrendingUp size={20} />
-              <span>Add Stake</span>
-            </button>
-            
-            <button 
-              onClick={handleClaimRewards}
-              className="bg-accent-green text-white p-4 rounded-xl font-medium hover:bg-accent-green/80 transition-all duration-200 flex items-center justify-center space-x-2"
-            >
-              <DollarSign size={20} />
-              <span>Claim Rewards</span>
-            </button>
-            
-            <button 
-              onClick={handleViewWallet}
-              className="bg-accent-purple text-white p-4 rounded-xl font-medium hover:bg-accent-purple/80 transition-all duration-200 flex items-center justify-center space-x-2"
-            >
-              <Wallet size={20} />
-              <span>View Wallet</span>
-            </button>
-          </div>
+          <button 
+            onClick={handleInstallApp}
+            className="text-xs bg-accent-blue text-white px-3 py-1 rounded-lg hover:bg-accent-blue/80 transition-colors"
+          >
+            Install
+          </button>
         </div>
       </div>
 
-      {/* Desktop Layout */}
-      <div className="hidden lg:block">
-        <div className="flex">
-          {/* Sidebar */}
-          <div className="w-64 bg-bg-secondary border-r border-border-light min-h-screen p-6">
-            {/* Logo */}
-            <div className="mb-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white p-2 mx-auto">
-                <div className="text-black font-bold text-lg">Logo</div>
-              </div>
-            </div>
+      {/* Wallet Connection Card (if not connected) */}
+      {!isConnected && (
+        <WalletConnectionCard />
+      )}
 
-            {/* Navigation */}
-            <nav className="space-y-2 mb-8">
-              <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-accent-blue text-white transition-colors">
-                <Grid size={20} />
-                <span>Dashboard</span>
-              </button>
-              <button 
-                onClick={() => router.push('/staking')}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5 transition-colors"
-              >
-                <BarChart3 size={20} />
-                <span>Staking</span>
-              </button>
-              <button 
-                onClick={() => router.push('/wallet')}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5 transition-colors"
-              >
-                <Wallet size={20} />
-                <span>Wallet</span>
-              </button>
-              <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-text-secondary hover:bg-white/5 transition-colors">
-                <Bell size={20} />
-                <span>Notifications</span>
-              </button>
-            </nav>
+      {/* Network Pills */}
+      <div className="mb-6">
+        <div className="flex items-center space-x-2 overflow-x-auto pb-2">
+          {networks.map((network) => (
+            <button
+              key={network.id}
+              onClick={() => handleNetworkSelect(network.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all whitespace-nowrap ${
+                network.isActive
+                  ? 'bg-accent-blue border-accent-blue text-white'
+                  : 'bg-transparent border-border-light text-text-secondary hover:border-accent-blue/50'
+              }`}
+            >
+              <network.icon className={`h-4 w-4 ${network.color}`} />
+              <span className="text-sm font-medium">{network.name}</span>
+              <span className="text-xs">{network.apy}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-            {/* User Profile */}
-            <div className="mt-auto">
-              <div className="flex items-center space-x-3 p-3 rounded-xl bg-white/5">
-                <div className="w-8 h-8 bg-accent-blue rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">P</span>
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-text-primary">Philips@gmail.com</div>
-                  <div className="text-xs text-text-secondary">{shortenedAddress}</div>
-                </div>
-              </div>
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
+        <div className="bg-[#282840] rounded-3xl p-4 md:p-6 border border-border-light">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-text-primary">Total Staked</h3>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-accent-green/20 rounded-xl flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-accent-green" />
             </div>
           </div>
+          <div className="text-2xl md:text-3xl font-bold text-text-primary mb-2">
+            ${totalStaked.toLocaleString()}
+          </div>
+          <p className="text-text-secondary text-sm">Across all networks</p>
+        </div>
 
-          {/* Main Content */}
-          <div className="flex-1 p-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <h1 className="text-3xl font-bold text-text-primary">Dashboard</h1>
-              <div className="flex items-center space-x-4">
-                <div className="bg-bg-secondary border border-border-light rounded-xl px-4 py-2">
-                  <span className="text-text-primary">{shortenedAddress}</span>
-                </div>
-                <div className="w-8 h-8 bg-accent-blue rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">P</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Wallet Connection Card for Desktop (if not connected) */}
-            {!isConnected && (
-              <div className="mb-8">
-                <WalletConnectionCard />
-              </div>
-            )}
-
-            {/* Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-text-primary">Total Staked</h3>
-                  <div className="w-12 h-12 bg-accent-green/20 rounded-xl flex items-center justify-center">
-                    <TrendingUp size={24} className="text-accent-green" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-text-primary mb-2">
-                  ${totalStaked.toLocaleString()}
-                </div>
-                <p className="text-text-secondary text-sm">Across all networks</p>
-              </div>
-
-              <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-text-primary">Pending Rewards</h3>
-                  <div className="w-12 h-12 bg-accent-blue/20 rounded-xl flex items-center justify-center">
-                    <DollarSign size={24} className="text-accent-blue" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-accent-green mb-2">
-                  ${totalPendingRewards.toLocaleString()}
-                </div>
-                <p className="text-text-secondary text-sm">Ready to claim</p>
-              </div>
-
-              <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-text-primary">Total Earned</h3>
-                  <div className="w-12 h-12 bg-accent-purple/20 rounded-xl flex items-center justify-center">
-                    <Wallet size={24} className="text-accent-purple" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-text-primary mb-2">
-                  ${totalEarned.toLocaleString()}
-                </div>
-                <p className="text-text-secondary text-sm">Lifetime earnings</p>
-              </div>
-
-              <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-text-primary">Average APY</h3>
-                  <div className="w-12 h-12 bg-accent-orange/20 rounded-xl flex items-center justify-center">
-                    <Clock size={24} className="text-accent-orange" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-accent-green mb-2">
-                  {averageAPY.toFixed(1)}%
-                </div>
-                <p className="text-text-secondary text-sm">Current rate</p>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-[#282840] rounded-3xl p-6 border border-border-light">
-              <h3 className="text-xl font-semibold text-text-primary mb-6">Quick Actions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button 
-                  onClick={handleAddStake}
-                  className="bg-accent-blue text-white p-4 rounded-xl font-medium hover:bg-accent-blue/80 transition-all duration-200 flex items-center justify-center space-x-2"
-                >
-                  <TrendingUp size={20} />
-                  <span>Add Stake</span>
-                </button>
-                
-                <button 
-                  onClick={handleClaimRewards}
-                  className="bg-accent-green text-white p-4 rounded-xl font-medium hover:bg-accent-green/80 transition-all duration-200 flex items-center justify-center space-x-2"
-                >
-                  <DollarSign size={20} />
-                  <span>Claim Rewards</span>
-                </button>
-                
-                <button 
-                  onClick={handleViewWallet}
-                  className="bg-accent-purple text-white p-4 rounded-xl font-medium hover:bg-accent-purple/80 transition-all duration-200 flex items-center justify-center space-x-2"
-                >
-                  <Wallet size={20} />
-                  <span>View Wallet</span>
-                </button>
-              </div>
+        <div className="bg-[#282840] rounded-3xl p-4 md:p-6 border border-border-light">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-text-primary">Pending Rewards</h3>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-accent-blue/20 rounded-xl flex items-center justify-center">
+              <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-accent-blue" />
             </div>
           </div>
+          <div className="text-2xl md:text-3xl font-bold text-accent-green mb-2">
+            ${totalPendingRewards.toLocaleString()}
+          </div>
+          <p className="text-text-secondary text-sm">Ready to claim</p>
+        </div>
+
+        <div className="bg-[#282840] rounded-3xl p-4 md:p-6 border border-border-light">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-text-primary">Total Earned</h3>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-accent-purple/20 rounded-xl flex items-center justify-center">
+              <Wallet className="h-5 w-5 md:h-6 md:w-6 text-accent-purple" />
+            </div>
+          </div>
+          <div className="text-2xl md:text-3xl font-bold text-text-primary mb-2">
+            ${totalEarned.toLocaleString()}
+          </div>
+          <p className="text-text-secondary text-sm">Lifetime earnings</p>
+        </div>
+
+        <div className="bg-[#282840] rounded-3xl p-4 md:p-6 border border-border-light">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-text-primary">Average APY</h3>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-accent-orange/20 rounded-xl flex items-center justify-center">
+              <Clock className="h-5 w-5 md:h-6 md:w-6 text-accent-orange" />
+            </div>
+          </div>
+          <div className="text-2xl md:text-3xl font-bold text-accent-green mb-2">
+            {averageAPY.toFixed(1)}%
+          </div>
+          <p className="text-text-secondary text-sm">Current rate</p>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-[#282840] rounded-3xl p-4 md:p-6 border border-border-light">
+        <h3 className="text-lg md:text-xl font-semibold text-text-primary mb-4 md:mb-6">Quick Actions</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+          <button 
+            onClick={handleAddStake}
+            className="bg-accent-blue text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-blue/80 transition-all duration-200 flex items-center justify-center space-x-2"
+          >
+            <TrendingUp className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="text-sm md:text-base">Add Stake</span>
+          </button>
+          
+          <button 
+            onClick={handleClaimRewards}
+            className="bg-accent-green text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-green/80 transition-all duration-200 flex items-center justify-center space-x-2"
+          >
+            <DollarSign className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="text-sm md:text-base">Claim Rewards</span>
+          </button>
+          
+          <button 
+            onClick={handleViewWallet}
+            className="bg-accent-purple text-white p-3 md:p-4 rounded-xl font-medium hover:bg-accent-purple/80 transition-all duration-200 flex items-center justify-center space-x-2"
+          >
+            <Wallet className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="text-sm md:text-base">View Wallet</span>
+          </button>
         </div>
       </div>
     </div>

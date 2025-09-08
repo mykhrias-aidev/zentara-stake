@@ -6,6 +6,7 @@ import { WagmiConfig } from 'wagmi'
 import { config } from '@/lib/wagmi'
 import { FirebaseProvider } from '@/lib/firebase-context'
 import { Web3Provider } from '@/lib/web3-context'
+import { ThemeProvider } from '@/lib/theme-context'
 
 interface AppContextType {
   isAuthenticated: boolean
@@ -41,16 +42,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={config}>
-        <AppContext.Provider value={{ isAuthenticated: false, user: null, loading: false }}>
-          <FirebaseProvider>
-            <Web3Provider>
-              {children}
-            </Web3Provider>
-          </FirebaseProvider>
-        </AppContext.Provider>
-      </WagmiConfig>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <WagmiConfig config={config}>
+          <AppContext.Provider value={{ isAuthenticated: false, user: null, loading: false }}>
+            <FirebaseProvider>
+              <Web3Provider>
+                {children}
+              </Web3Provider>
+            </FirebaseProvider>
+          </AppContext.Provider>
+        </WagmiConfig>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }

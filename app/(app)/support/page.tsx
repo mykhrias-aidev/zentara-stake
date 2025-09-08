@@ -93,7 +93,7 @@ export default function SupportPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto fade-in">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-text-primary mb-2">Customer Support</h1>
         <p className="text-text-secondary">Get help with Zentara Stake or contact our support team</p>
@@ -102,109 +102,94 @@ export default function SupportPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Contact Options */}
         <div className="lg:col-span-1 space-y-6">
-          {/* Quick Contact */}
-          <div className="bg-bg-secondary rounded-3xl p-6 border border-border-light">
-            <h2 className="text-xl font-semibold text-text-primary mb-4">Contact Us</h2>
+          <div className="card-glass p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Quick Contact</h2>
             <div className="space-y-4">
-              <div className="flex items-center space-x-3 p-3 rounded-xl bg-bg-primary border border-border-light">
+              <div className="flex items-center space-x-3 p-3 rounded-xl bg-bg-primary hover:bg-bg-card transition-colors cursor-pointer">
                 <MessageCircle className="h-5 w-5 text-accent-blue" />
                 <div>
-                  <p className="text-text-primary font-medium">Live Chat</p>
-                  <p className="text-text-secondary text-sm">Available 24/7</p>
+                  <div className="text-text-primary font-medium">Live Chat</div>
+                  <div className="text-text-secondary text-sm">Available 24/7</div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3 p-3 rounded-xl bg-bg-primary border border-border-light">
+              <div className="flex items-center space-x-3 p-3 rounded-xl bg-bg-primary hover:bg-bg-card transition-colors cursor-pointer">
                 <Mail className="h-5 w-5 text-accent-green" />
                 <div>
-                  <p className="text-text-primary font-medium">Email Support</p>
-                  <p className="text-text-secondary text-sm">support@zentara.com</p>
+                  <div className="text-text-primary font-medium">Email Support</div>
+                  <div className="text-text-secondary text-sm">support@zentara.com</div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3 p-3 rounded-xl bg-bg-primary border border-border-light">
+              <div className="flex items-center space-x-3 p-3 rounded-xl bg-bg-primary hover:bg-bg-card transition-colors cursor-pointer">
                 <Phone className="h-5 w-5 text-accent-purple" />
                 <div>
-                  <p className="text-text-primary font-medium">Phone Support</p>
-                  <p className="text-text-secondary text-sm">+1 (555) 123-4567</p>
+                  <div className="text-text-primary font-medium">Phone Support</div>
+                  <div className="text-text-secondary text-sm">+1 (555) 123-4567</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Response Times */}
-          <div className="bg-bg-secondary rounded-3xl p-6 border border-border-light">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">Response Times</h3>
+          <div className="card-glass p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Support Hours</h2>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-text-secondary">Live Chat</span>
-                <span className="text-accent-green font-medium">Instant</span>
+              <div className="flex justify-between">
+                <span className="text-text-secondary">Monday - Friday</span>
+                <span className="text-text-primary">9:00 AM - 6:00 PM EST</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-text-secondary">Email</span>
-                <span className="text-accent-blue font-medium">< 24 hours</span>
+              <div className="flex justify-between">
+                <span className="text-text-secondary">Weekend</span>
+                <span className="text-text-primary">10:00 AM - 4:00 PM EST</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-text-secondary">Phone</span>
-                <span className="text-accent-purple font-medium">< 2 hours</span>
+              <div className="flex items-center space-x-2 mt-4">
+                <div className="w-3 h-3 bg-accent-green rounded-full animate-pulse"></div>
+                <span className="text-text-primary text-sm">Currently Online</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* FAQ and Support Form */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6">
           {/* FAQ Section */}
-          <div className="bg-bg-secondary rounded-3xl p-6 border border-border-light">
-            <h2 className="text-xl font-semibold text-text-primary mb-6">Frequently Asked Questions</h2>
+          <div className="card-glass p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Frequently Asked Questions</h2>
             
             {/* Search and Filter */}
-            <div className="mb-6 space-y-4">
-              <div className="relative">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
                 <input
                   type="text"
                   placeholder="Search FAQs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-bg-primary border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                  className="w-full pl-10 pr-4 py-2 bg-bg-input border border-border-light rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all duration-200"
                 />
               </div>
               
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedCategory('general')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedCategory === 'general'
-                      ? 'bg-accent-blue text-white'
-                      : 'bg-bg-primary text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  All
-                </button>
-                {categories.slice(1).map(category => (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      selectedCategory === category.id
-                        ? 'bg-accent-blue text-white'
-                        : 'bg-bg-primary text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-2 bg-bg-input border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all duration-200"
+              >
+                <option value="general">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
                     {category.name}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
             {/* FAQ List */}
-            <div className="space-y-2">
-              {filteredFaqs.map(faq => (
+            <div className="space-y-3">
+              {filteredFaqs.map((faq) => (
                 <div key={faq.id} className="border border-border-light rounded-xl overflow-hidden">
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                    className="w-full flex items-center justify-between p-4 text-left hover:bg-bg-primary transition-colors"
+                    className="w-full flex items-center justify-between p-4 text-left hover:bg-bg-card transition-colors"
                   >
                     <span className="text-text-primary font-medium">{faq.question}</span>
                     {expandedFaq === faq.id ? (
@@ -213,9 +198,10 @@ export default function SupportPage() {
                       <ChevronRight className="h-4 w-4 text-text-secondary" />
                     )}
                   </button>
+                  
                   {expandedFaq === faq.id && (
-                    <div className="px-4 pb-4 text-text-secondary">
-                      {faq.answer}
+                    <div className="px-4 pb-4">
+                      <p className="text-text-secondary">{faq.answer}</p>
                     </div>
                   )}
                 </div>
@@ -224,8 +210,8 @@ export default function SupportPage() {
           </div>
 
           {/* Support Ticket Form */}
-          <div className="bg-bg-secondary rounded-3xl p-6 border border-border-light">
-            <h2 className="text-xl font-semibold text-text-primary mb-6">Submit a Support Ticket</h2>
+          <div className="card-glass p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Submit Support Ticket</h2>
             
             <form onSubmit={handleSubmitTicket} className="space-y-4">
               <div>
@@ -234,31 +220,34 @@ export default function SupportPage() {
                   type="text"
                   value={ticketForm.subject}
                   onChange={(e) => setTicketForm({...ticketForm, subject: e.target.value})}
-                  className="w-full bg-bg-primary border border-border-light rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                  className="w-full px-4 py-2 bg-bg-input border border-border-light rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all duration-200"
+                  placeholder="Brief description of your issue"
                   required
                 />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-text-primary font-medium mb-2">Category</label>
                   <select
                     value={ticketForm.category}
                     onChange={(e) => setTicketForm({...ticketForm, category: e.target.value})}
-                    className="w-full bg-bg-primary border border-border-light rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                    className="w-full px-4 py-2 bg-bg-input border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all duration-200"
                   >
-                    {categories.map(category => (
-                      <option key={category.id} value={category.id}>{category.name}</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
                     ))}
                   </select>
                 </div>
-
+                
                 <div>
                   <label className="block text-text-primary font-medium mb-2">Priority</label>
                   <select
                     value={ticketForm.priority}
                     onChange={(e) => setTicketForm({...ticketForm, priority: e.target.value})}
-                    className="w-full bg-bg-primary border border-border-light rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                    className="w-full px-4 py-2 bg-bg-input border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all duration-200"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -267,22 +256,22 @@ export default function SupportPage() {
                   </select>
                 </div>
               </div>
-
+              
               <div>
                 <label className="block text-text-primary font-medium mb-2">Description</label>
                 <textarea
                   value={ticketForm.description}
                   onChange={(e) => setTicketForm({...ticketForm, description: e.target.value})}
-                  rows={6}
-                  className="w-full bg-bg-primary border border-border-light rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                  placeholder="Please describe your issue in detail..."
+                  rows={5}
+                  className="w-full px-4 py-2 bg-bg-input border border-border-light rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-blue transition-all duration-200 resize-none"
+                  placeholder="Please provide detailed information about your issue..."
                   required
                 />
               </div>
-
+              
               <button
                 type="submit"
-                className="flex items-center space-x-2 bg-accent-blue text-white px-6 py-3 rounded-xl hover:bg-accent-blue/80 transition-colors"
+                className="btn-glass-blue w-full flex items-center justify-center space-x-2 hover:scale-105 transition-all duration-300"
               >
                 <Send className="h-4 w-4" />
                 <span>Submit Ticket</span>
