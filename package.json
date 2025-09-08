@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:fast": "next dev --port 3000",
     "build": "next build",
+    "build:fast": "NODE_ENV=development next build",
     "start": "next start",
     "lint": "next lint",
     "export": "next build",
